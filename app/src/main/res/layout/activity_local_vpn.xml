@@ -8,5 +8,21 @@
     <Button android:id="@+id/vpn"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/start_vpn" />
+            android:text="@string/start_vpn"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="86dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/wifiscan_hotspot"
+        android:id="@+id/wifi_hotspot"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
 </RelativeLayout>

@@ -27,6 +27,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.tiagosaldanha.wifiandhotspot.MainActivity_WifiWatcher;
+import com.example.tiagosaldanha.wifiandhotspot.SecondActivity_HotspotCreator;
+
 
 public class LocalVPN extends ActionBarActivity
 {
@@ -53,6 +56,18 @@ public class LocalVPN extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_local_vpn);
         final Button vpnButton = (Button)findViewById(R.id.vpn);
+        final Button wifi_hotspotButton = (Button)findViewById(R.id.wifi_hotspot);
+
+        wifi_hotspotButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent viewWiFi = new Intent(LocalVPN.this,MainActivity_WifiWatcher.class);
+                startActivity(viewWiFi);
+            }
+        });
+
         vpnButton.setOnClickListener(new View.OnClickListener()
         {
             @Override

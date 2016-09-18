@@ -19,6 +19,10 @@ package xyz.hexene.localvpn;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.net.VpnService;
+import android.os.Binder;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
 import android.os.ParcelFileDescriptor;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -48,6 +52,17 @@ public class LocalVPNService extends VpnService
     private ParcelFileDescriptor vpnInterface = null;
 
     private PendingIntent pendingIntent;
+
+    private final IBinder mIBinder = new LocalBinder();
+    private static Handler mHandler;
+
+    public class LocalBinder extends Binder
+    {
+        public LocalVPNService getInstance()
+        {
+            return LocalVPNService.this;
+        }
+    }
 
     private ConcurrentLinkedQueue<Packet> deviceToNetworkUDPQueue;
     private ConcurrentLinkedQueue<Packet> deviceToNetworkTCPQueue;
@@ -102,6 +117,13 @@ public class LocalVPNService extends VpnService
     }
 
     @Override
+    public IBinder onBind(Intent intent)
+    {
+        Log.d(TAG, "onBind");
+        return mIBinder;
+    }
+
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
         return START_STICKY;
@@ -112,6 +134,11 @@ public class LocalVPNService extends VpnService
         return isRunning;
     }
 
+    public void setHandler(Handler handler)
+    {
+        Log.d(TAG, "Setting handler...");
+        mHandler = handler;
+    }
     @Override
     public void onDestroy()
     {
@@ -156,6 +183,7 @@ public class LocalVPNService extends VpnService
         private ConcurrentLinkedQueue<Packet> deviceToNetworkUDPQueue;
         private ConcurrentLinkedQueue<Packet> deviceToNetworkTCPQueue;
         private ConcurrentLinkedQueue<ByteBuffer> networkToDeviceQueue;
+        private Message msg;
 
         public VPNRunnable(FileDescriptor vpnFileDescriptor,
                            ConcurrentLinkedQueue<Packet> deviceToNetworkUDPQueue,
@@ -230,7 +258,10 @@ public class LocalVPNService extends VpnService
                         byte[] packetData = new byte[bufferCopy.limit()];
                         bufferCopy.get(packetData);
                         Log.d(TAG, "PACKAGE DATA: " + packetData);
+                        msg = mHandler.obtainMessage(LocalVPN.PACKET_MESSAGE_COMING, -1,-1,packetData);
 //                         stream.write(packetData);
+                        Log.d(TAG, "Sending to target");
+                        msg.sendToTarget();
 
 
                         while (bufferFromNetwork.hasRemaining())
@@ -257,6 +288,10 @@ public class LocalVPNService extends VpnService
             catch (IOException e)
             {
                 Log.w(TAG, e.toString(), e);
+            }
+            catch (Exception e){
+                Log.e(TAG, e.toString(), e);
+
             }
             finally
             {

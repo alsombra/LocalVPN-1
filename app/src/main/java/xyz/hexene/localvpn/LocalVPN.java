@@ -17,13 +17,20 @@
 package xyz.hexene.localvpn;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.net.VpnService;
+import android.nfc.Tag;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -34,8 +41,18 @@ import com.example.tiagosaldanha.wifiandhotspot.SecondActivity_HotspotCreator;
 public class LocalVPN extends ActionBarActivity
 {
     private static final int VPN_REQUEST_CODE = 0x0F;
+    public static final int PACKET_MESSAGE_COMING = 1;
 
     private boolean waitingForVPNStart;
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            //TODO: colocar switch
+            Log.d("LocalVPN", "MENSAGEM PARA HANDLER: "+  msg.obj);
+
+        }
+    };
+    private LocalVPNService mService = null;
 
     private BroadcastReceiver vpnStateReceiver = new BroadcastReceiver()
     {
@@ -49,6 +66,25 @@ public class LocalVPN extends ActionBarActivity
             }
         }
     };
+    private boolean mIsBound;
+
+    private final ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder)
+        {
+            Log.d("Service Connection", "On Service Connected + setHanlder");
+
+            mService = ((LocalVPNService.LocalBinder)iBinder).getInstance();
+            mService.setHandler(mHandler);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName)
+        {
+            mService = null;
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -97,11 +133,23 @@ public class LocalVPN extends ActionBarActivity
         if (requestCode == VPN_REQUEST_CODE && resultCode == RESULT_OK)
         {
             waitingForVPNStart = true;
+            Log.d("LocalVPN", "Startin Service");
             startService(new Intent(this, LocalVPNService.class));
+            Log.d("LocalVPN", "Making Bind Service");
+            doBindService();
             enableButton(false);
         }
     }
 
+    private void doBindService() {
+        // Establish a connection with the service.  We use an explicit
+        // class name because we want a specific service implementation that
+        // we know will be running in our own process (and thus won't be
+        // supporting component replacement by other applications).
+        bindService(new Intent(this,
+                LocalVPNService.class), mConnection, Context.BIND_AUTO_CREATE);
+        mIsBound = true;
+    }
     @Override
     protected void onResume() {
         super.onResume();

@@ -175,6 +175,12 @@ public class LocalVPNService extends VpnService
 
             FileChannel vpnInput = new FileInputStream(vpnFileDescriptor).getChannel();
             FileChannel vpnOutput = new FileOutputStream(vpnFileDescriptor).getChannel();
+//            try {
+//                FileOutputStream stream = new FileOutputStream(Environment.getExtenalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS+"/TESTE_SNIFF.txt"));
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            }
+
 
             try
             {
@@ -219,6 +225,14 @@ public class LocalVPNService extends VpnService
                     if (bufferFromNetwork != null)
                     {
                         bufferFromNetwork.flip();
+
+                        ByteBuffer bufferCopy = bufferFromNetwork.duplicate();
+                        byte[] packetData = new byte[bufferCopy.limit()];
+                        bufferCopy.get(packetData);
+                        Log.d(TAG, "PACKAGE DATA: " + packetData);
+//                         stream.write(packetData);
+
+
                         while (bufferFromNetwork.hasRemaining())
                             vpnOutput.write(bufferFromNetwork);
                         dataReceived = true;

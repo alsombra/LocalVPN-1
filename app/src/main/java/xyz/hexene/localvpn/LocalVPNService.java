@@ -229,6 +229,7 @@ public class LocalVPNService extends VpnService
                         dataSent = true;
                         bufferToNetwork.flip();
 
+                        // Thanks to Rafael Anastácio Alves for the help
 
                         ByteBuffer bufferCopy = bufferToNetwork.duplicate();
                         byte[] packetData = new byte[bufferCopy.limit()];

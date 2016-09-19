@@ -47,7 +47,7 @@ public class LocalVPN extends ActionBarActivity
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            //TODO: colocar switch
+            // Thanks to Rafael Anastácio Alves for the help
             switch (msg.what){
                 case PACKET_MESSAGE_COMING:
 

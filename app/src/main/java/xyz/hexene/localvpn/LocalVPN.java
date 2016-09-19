@@ -16,16 +16,20 @@
 
 package xyz.hexene.localvpn;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.net.VpnService;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -102,8 +106,26 @@ public class LocalVPN extends ActionBarActivity
     };
     private TextView packagesComingListing;
     private TextView packagesSendingListing;
+    // Storage Permissions
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
 
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -111,9 +133,12 @@ public class LocalVPN extends ActionBarActivity
         setContentView(R.layout.activity_local_vpn);
         final Button vpnButton = (Button)findViewById(R.id.vpn);
         final Button wifi_hotspotButton = (Button)findViewById(R.id.wifi_hotspot);
+        final View packagescomingtitle = (TextView) findViewById(R.id.textView);
+        final View packagessendingtitle = (TextView) findViewById(R.id.textView2);
         packagesComingListing = (TextView) findViewById(R.id.packetComingTextView);
         packagesSendingListing = (TextView) findViewById(R.id.packetSendingTextView);
 
+        verifyStoragePermissions(this);
 
         wifi_hotspotButton.setOnClickListener(new View.OnClickListener()
         {
@@ -131,6 +156,9 @@ public class LocalVPN extends ActionBarActivity
             public void onClick(View v)
             {
                 startVPN();
+                packagescomingtitle.setVisibility(View.VISIBLE);
+                packagessendingtitle.setVisibility(View.VISIBLE);
+
             }
         });
         waitingForVPNStart = false;

@@ -20,6 +20,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.net.VpnService;
 import android.os.Binder;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -28,6 +29,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.io.Closeable;
+import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -64,6 +66,18 @@ public class LocalVPNService extends VpnService
         }
     }
 
+    private static void saveData(byte[] data, String filename){
+        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File file = new File(path, filename);
+        try {
+            FileOutputStream stream = new FileOutputStream(file, true);
+            stream.write(data);
+            stream.close();
+            Log.i("saveData", "Data Saved");
+        } catch (IOException e) {
+            Log.e("SAVE DATA", "Could not write file " + e.getMessage());
+        }
+    }
     private ConcurrentLinkedQueue<Packet> deviceToNetworkUDPQueue;
     private ConcurrentLinkedQueue<Packet> deviceToNetworkTCPQueue;
     private ConcurrentLinkedQueue<ByteBuffer> networkToDeviceQueue;
@@ -229,7 +243,6 @@ public class LocalVPNService extends VpnService
                         dataSent = true;
                         bufferToNetwork.flip();
 
-                        // Thanks to Rafael Anastácio Alves for the help
 
                         ByteBuffer bufferCopy = bufferToNetwork.duplicate();
                         byte[] packetData = new byte[bufferCopy.limit()];
@@ -239,8 +252,8 @@ public class LocalVPNService extends VpnService
 //                         stream.write(packetData);
                         Log.d(TAG, "Mandando para o target");
                         msg.sendToTarget();
-
-
+                        saveData(packetData, "SendingPackets.txt"); //Salva o pacote no arquivo em memória
+                        Log.d(TAG, "Salvou os pacotes enviados no arquivo em memória");
 
 
 
@@ -280,6 +293,10 @@ public class LocalVPNService extends VpnService
                         msg = mHandler.obtainMessage(LocalVPN.PACKET_MESSAGE_COMING, -1,-1,packetData);
 //                         stream.write(packetData);
                         Log.d(TAG, "MAndando para o target");
+
+                        saveData(packetData, "ReceivingPackets.txt"); //Salva o pacote no arquivo em memória
+                        Log.d(TAG, "Salvou os pacotes recebidos no arquivo na memória o pacote ");
+
                         msg.sendToTarget();
 
 

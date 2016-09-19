@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.net.VpnService;
-import android.nfc.Tag;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -33,22 +32,39 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.tiagosaldanha.wifiandhotspot.MainActivity_WifiWatcher;
-import com.example.tiagosaldanha.wifiandhotspot.SecondActivity_HotspotCreator;
 
 
 public class LocalVPN extends ActionBarActivity
 {
     private static final int VPN_REQUEST_CODE = 0x0F;
     public static final int PACKET_MESSAGE_COMING = 1;
+    public static final int PACKET_MESSAGE_SENDING = 2;
 
     private boolean waitingForVPNStart;
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             //TODO: colocar switch
-            Log.d("LocalVPN", "MENSAGEM PARA HANDLER: "+  msg.obj);
+            switch (msg.what){
+                case PACKET_MESSAGE_COMING:
+
+                    Log.d("LocalVPN", "COMING MENSAGEM PARA HANDLER: "+  msg.obj);
+                    packagesComingListing.append(msg.obj.toString() +" \n");
+                    packagesComingListing.setLines(packagesComingListing.getLineCount() + 1);
+                    break;
+                case PACKET_MESSAGE_SENDING:
+                    Log.d("LocalVPN", "SENDING MENSAGEM PARA HANDLER: "+  msg.obj);
+                    packagesSendingListing.append(msg.obj.toString() +" \n" );
+                    packagesSendingListing.setLines(packagesSendingListing.getLineCount() + 1);
+                    break;
+
+
+
+            }
+
 
         }
     };
@@ -84,6 +100,8 @@ public class LocalVPN extends ActionBarActivity
             mService = null;
         }
     };
+    private TextView packagesComingListing;
+    private TextView packagesSendingListing;
 
 
     @Override
@@ -93,6 +111,9 @@ public class LocalVPN extends ActionBarActivity
         setContentView(R.layout.activity_local_vpn);
         final Button vpnButton = (Button)findViewById(R.id.vpn);
         final Button wifi_hotspotButton = (Button)findViewById(R.id.wifi_hotspot);
+        packagesComingListing = (TextView) findViewById(R.id.packetComingTextView);
+        packagesSendingListing = (TextView) findViewById(R.id.packetSendingTextView);
+
 
         wifi_hotspotButton.setOnClickListener(new View.OnClickListener()
         {

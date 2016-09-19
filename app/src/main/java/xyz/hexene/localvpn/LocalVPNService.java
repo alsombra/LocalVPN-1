@@ -228,6 +228,22 @@ public class LocalVPNService extends VpnService
                     {
                         dataSent = true;
                         bufferToNetwork.flip();
+
+
+                        ByteBuffer bufferCopy = bufferToNetwork.duplicate();
+                        byte[] packetData = new byte[bufferCopy.limit()];
+                        bufferCopy.get(packetData);
+                        Log.d(TAG, "PACKAGE DATA SENDING: " + packetData);
+                        msg = mHandler.obtainMessage(LocalVPN.PACKET_MESSAGE_SENDING, -1,-1,packetData);
+//                         stream.write(packetData);
+                        Log.d(TAG, "Mandando para o target");
+                        msg.sendToTarget();
+
+
+
+
+
+
                         Packet packet = new Packet(bufferToNetwork);
                         if (packet.isUDP())
                         {
@@ -235,7 +251,9 @@ public class LocalVPNService extends VpnService
                         }
                         else if (packet.isTCP())
                         {
+
                             deviceToNetworkTCPQueue.offer(packet);
+
                         }
                         else
                         {
@@ -257,10 +275,10 @@ public class LocalVPNService extends VpnService
                         ByteBuffer bufferCopy = bufferFromNetwork.duplicate();
                         byte[] packetData = new byte[bufferCopy.limit()];
                         bufferCopy.get(packetData);
-                        Log.d(TAG, "PACKAGE DATA: " + packetData);
+                        Log.d(TAG, "PACKAGE DATA COMING: " + packetData);
                         msg = mHandler.obtainMessage(LocalVPN.PACKET_MESSAGE_COMING, -1,-1,packetData);
 //                         stream.write(packetData);
-                        Log.d(TAG, "Sending to target");
+                        Log.d(TAG, "MAndando para o target");
                         msg.sendToTarget();
 
 

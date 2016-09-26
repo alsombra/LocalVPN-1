@@ -131,6 +131,8 @@ public class LocalVPN extends ActionBarActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_local_vpn);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setIcon(R.drawable.ic_launcher);
         final Button vpnButton = (Button)findViewById(R.id.vpn);
         final Button wifi_hotspotButton = (Button)findViewById(R.id.wifi_hotspot);
         final View packagescomingtitle = (TextView) findViewById(R.id.textView);

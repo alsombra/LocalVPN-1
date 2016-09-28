@@ -37,6 +37,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.tiagosaldanha.wifiandhotspot.MainActivity_WifiWatcher;
 
@@ -51,18 +52,18 @@ public class LocalVPN extends ActionBarActivity
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            // Thanks to Rafael Anastácio Alves for the help
+
             switch (msg.what){
                 case PACKET_MESSAGE_COMING:
 
-                    Log.d("LocalVPN", "COMING MENSAGEM PARA HANDLER: "+  msg.obj);
-                    packagesComingListing.append(msg.obj.toString() +" \n");
-                    packagesComingListing.setLines(packagesComingListing.getLineCount() + 1);
+                    Log.d("LocalVPN", "COMING MENSAGEM PARA HANDLER: "+  msg.obj.toString());
+                   // packagesComingListing.append(msg.obj.toString() +" \n");
+                   // packagesComingListing.setLines(packagesComingListing.getLineCount() + 1);
                     break;
                 case PACKET_MESSAGE_SENDING:
                     Log.d("LocalVPN", "SENDING MENSAGEM PARA HANDLER: "+  msg.obj);
-                    packagesSendingListing.append(msg.obj.toString() +" \n" );
-                    packagesSendingListing.setLines(packagesSendingListing.getLineCount() + 1);
+                    //packagesSendingListing.append(msg.obj.toString() +" \n" );
+                    //packagesSendingListing.setLines(packagesSendingListing.getLineCount() + 1);
                     break;
 
 
@@ -105,6 +106,7 @@ public class LocalVPN extends ActionBarActivity
         }
     };
     private TextView packagesComingListing;
+    private TextView localdownload;
     private TextView packagesSendingListing;
     // Storage Permissions
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -135,10 +137,11 @@ public class LocalVPN extends ActionBarActivity
         getSupportActionBar().setIcon(R.drawable.ic_launcher);
         final Button vpnButton = (Button)findViewById(R.id.vpn);
         final Button wifi_hotspotButton = (Button)findViewById(R.id.wifi_hotspot);
-        final View packagescomingtitle = (TextView) findViewById(R.id.textView);
-        final View packagessendingtitle = (TextView) findViewById(R.id.textView2);
-        packagesComingListing = (TextView) findViewById(R.id.packetComingTextView);
-        packagesSendingListing = (TextView) findViewById(R.id.packetSendingTextView);
+       // final View packagescomingtitle = (TextView) findViewById(R.id.textView);
+        //final View packagessendingtitle = (TextView) findViewById(R.id.textView2);
+       // packagesComingListing = (TextView) findViewById(R.id.packetComingTextView);
+       // packagesSendingListing = (TextView) findViewById(R.id.packetSendingTextView);
+        localdownload = (TextView) findViewById(R.id.textView4);
 
         verifyStoragePermissions(this);
 
@@ -157,9 +160,12 @@ public class LocalVPN extends ActionBarActivity
             @Override
             public void onClick(View v)
             {
+                Toast.makeText(getApplicationContext(), "Iniciando VPN e sniffing...", Toast.LENGTH_SHORT).show();
                 startVPN();
-                packagescomingtitle.setVisibility(View.VISIBLE);
-                packagessendingtitle.setVisibility(View.VISIBLE);
+
+              //  packagescomingtitle.setVisibility(View.VISIBLE);
+              //  packagessendingtitle.setVisibility(View.VISIBLE);
+                localdownload.setVisibility(View.VISIBLE);
 
             }
         });
@@ -185,6 +191,7 @@ public class LocalVPN extends ActionBarActivity
         {
             waitingForVPNStart = true;
             Log.d("LocalVPN", "Startin Service");
+
             startService(new Intent(this, LocalVPNService.class));
             Log.d("LocalVPN", "Making Bind Service");
             doBindService();

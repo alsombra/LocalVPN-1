@@ -77,12 +77,12 @@ public class SecondActivity_HotspotCreator extends Activity {
             @Override
             public void onClick(View view)
             {
-                Toast.makeText(getApplicationContext(), "CREATING HOTSPOT...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "CRIANDO HOTSPOT...", Toast.LENGTH_SHORT).show();
                 wifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
                 createWifiAccessPoint();
                 setMobileDataEnabled (true);
-                Toast.makeText(getApplicationContext(), "Hotspot Created", Toast.LENGTH_SHORT).show();
-                smallTextView.setText("HOTSPOT CREATED");
+                Toast.makeText(getApplicationContext(), "Hotspot Criado", Toast.LENGTH_SHORT).show();
+                smallTextView.setText("HOTSPOT CRIADO");
             }
         });
 

@@ -28,15 +28,20 @@ import android.os.ParcelFileDescriptor;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import java.io.BufferedWriter;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.Selector;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -54,6 +59,8 @@ public class LocalVPNService extends VpnService
     private ParcelFileDescriptor vpnInterface = null;
 
     private PendingIntent pendingIntent;
+
+
 
     private final IBinder mIBinder = new LocalBinder();
     private static Handler mHandler;
@@ -254,7 +261,11 @@ public class LocalVPNService extends VpnService
                         msg.sendToTarget();
                         saveData(packetData, "SendingPackets.txt"); //Salva o pacote no arquivo em memória
                         Log.d(TAG, "Salvou os pacotes enviados no arquivo em memória");
+                        //SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yy HH-mm-ss");
+                        //Date date = new Date();
+                       // new BufferedWriter(new FileWriter(dateFormat.format(date) + "SendingPackets.txt", true));
 
+                        Log.d(TAG, "Salvou os pacotes recebidos no arquivo na memória o pacote ");
 
 
 
@@ -295,6 +306,10 @@ public class LocalVPNService extends VpnService
                         Log.d(TAG, "MAndando para o target");
 
                         saveData(packetData, "ReceivingPackets.txt"); //Salva o pacote no arquivo em memória
+                        //SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yy HH-mm-ss");
+                        //Date date = new Date();
+                        //new BufferedWriter(new FileWriter(dateFormat.format(date) + "ReceivingPackets.txt", true));
+
                         Log.d(TAG, "Salvou os pacotes recebidos no arquivo na memória o pacote ");
 
                         msg.sendToTarget();

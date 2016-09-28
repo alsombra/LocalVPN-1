@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/myswitch"
-        android:text="WiFi Settings  "
+        android:text="Configurações Wifi "
         android:textOn="ON"
         android:textOff="OFF"
         android:showText="true"
@@ -25,7 +25,7 @@
     <Button android:id="@+id/btn"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:text="Search Network"
+        android:text="Procurar Rede WiFi"
         android:layout_below="@+id/myswitch"
         android:layout_centerHorizontal="true" />
 
